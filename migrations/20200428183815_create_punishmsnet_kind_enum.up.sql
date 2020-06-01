@@ -1,0 +1,1 @@
+CREATE TYPE punishment_kind AS ENUM ('NonLive', 'ByzantineFault');

@@ -1,0 +1,1 @@
+DROP TYPE IF EXISTS punishment_kind;

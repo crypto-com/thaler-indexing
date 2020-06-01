@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS activities_block_height_index;

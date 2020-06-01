@@ -1,0 +1,1 @@
+CREATE INDEX block_committed_council_nodes_council_node_id_index ON block_committed_council_nodes(council_node_id);

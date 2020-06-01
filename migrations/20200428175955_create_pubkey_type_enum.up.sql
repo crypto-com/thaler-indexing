@@ -1,0 +1,1 @@
+CREATE TYPE pubkey_type AS ENUM ('ed25519');

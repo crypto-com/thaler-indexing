@@ -1,0 +1,1 @@
+CREATE INDEX activities_type_index ON activities(type);

@@ -1,0 +1,1 @@
+DROP INDEX IF EXISTS block_committed_council_nodes_block_height_index;

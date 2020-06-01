@@ -1,0 +1,8 @@
+language = "C"
+include_version = true
+braces = "SameLine"
+line_length = 80
+tab_width = 2
+documentation_style = "auto"
+sys_includes = ["stdlib.h"]
+no_includes = true

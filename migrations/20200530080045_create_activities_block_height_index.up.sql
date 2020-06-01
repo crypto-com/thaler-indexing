@@ -1,0 +1,1 @@
+CREATE INDEX activities_block_height_index ON activities(block_height);

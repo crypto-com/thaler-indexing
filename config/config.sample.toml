@@ -1,0 +1,36 @@
+[logger]
+color = true
+
+[httpapi]
+listening_address = "localhost:28857"
+write_timeout = "15s"
+read_timeout = "15s"
+idle_timeout = "15s"
+
+[tendermint]
+http_rpc_url = "http://localhost:26657"
+
+[database]
+host = "localhost"
+port = 5432
+username = "postgres"
+# password can only be provided through Environment variable `DB_PASS`
+name = "postgres"
+schema = "public"
+ssl = true
+
+[synchronization]
+# Interval between each polling of Tendermint block height
+# If the interval is too long it may cause slow update of blocks
+block_height_polling_interval = "5s"
+block_height_channel_size = 5
+block_data_channel_size = 5
+# Maximum concurrent worker to process block
+max_concurrent_block_worker = 15
+
+[postgres]
+pool_max_conns = 4
+pool_min_conns = 0
+pool_max_conn_lifetime = "1h"
+pool_max_conn_idle_time = "30m"
+pool_health_check_interval = "1m"

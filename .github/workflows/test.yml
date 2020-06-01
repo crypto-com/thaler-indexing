@@ -1,0 +1,33 @@
+name: deploy
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    name: Check Linting
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+    - name: Check linting
+      run: |
+        ./lint.sh
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+    - name: Run test cases
+      run: |
+        ./test.sh --no-db
+  build:
+    name: Test Building
+    runs-on: ubuntu-latest
+    needs: ["lint", "test"]
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+    - name: make all
+      run: |
+        make all
