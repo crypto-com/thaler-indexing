@@ -2,7 +2,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-# TODO: Use docker for reproducible environment
 DEFAULT_MIGRATION_FOLDER="$(pwd)/migrations"
 export TEST_POSTGRES_MIGRATIONS_FOLDER=${TEST_POSTGRES_MIGRATIONS_FOLDER:-${DEFAULT_MIGRATION_FOLDER}}
 export TEST_POSTGRES_USERNAME=${TEST_POSTGRES_USERNAME:-postgres}
@@ -12,6 +11,7 @@ export TEST_POSTGRES_PORT=${TEST_POSTGRES_PORT:-5433}
 export TEST_POSTGRES_DATABASE=${TEST_POSTGRES_DATABASE:-postgres_test}
 export TEST_POSTGRES_SCHEMA=${TEST_POSTGRES_SCHEMA:-public}
 
+GOPATH=$(go env GOPATH)
 DOCKER_COMPOSE_PROJECT="chain_indexing_test"
 
 # main
@@ -25,7 +25,7 @@ echoerr() { echo "$@" 1>&2; }
 
 check_ginkgo() {
     set +e
-    command -v ginkgo > /dev/null
+    command -v "${GOPATH}/bin/ginkgo" -r > /dev/null
     RET_VALUE=$?
     set -e
 }
@@ -77,14 +77,14 @@ is_postgres_ready() {
 
 run_test() {
     set +e
-    ginkgo -r
+    "${GOPATH}/bin/ginkgo" -v -r --trace
     RET_VALUE=$?
     set -e
 }
 
 run_test_watch() {
     set +e
-    ginkgo watch -r
+    "${GOPATH}/bin/ginkgo" watch -v -r
     RET_VALUE=$?
     set -e
 }

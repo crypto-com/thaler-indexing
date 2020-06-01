@@ -166,7 +166,7 @@ func (repo *RDbBlockDataRepo) insertBlockCommittedCouncilNodes(tx RDbTx, rows []
 	for _, row := range rows {
 		var err error
 
-		// nolint:scopelint
+		// nolint:gosec,scopelint
 		if err = repo.insertBlockCommittedCouncilNodeRow(tx, &row); err != nil {
 			return err
 		}

@@ -11,7 +11,7 @@ import (
 	"github.com/crypto-com/chainindex/usecase"
 )
 
-const RFC3339_TIME_REGEX = `\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}`
+const RFC3339_TIME_REGEX = `\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}`
 
 var _ = Describe("Zerolog", func() {
 	It("should implement Logger interface", func() {
@@ -61,6 +61,7 @@ var _ = Describe("Zerolog", func() {
 			Expect(mockWriter).NotTo(gbytes.Say("any panic message"))
 		})
 	})
+
 	Describe("Panic", func() {
 		It("should panic", func() {
 			mockWriter := NewMockWriter()

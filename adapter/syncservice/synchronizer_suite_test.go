@@ -9,5 +9,5 @@ import (
 
 func TestSyncService(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "syncservice Suite")
+	RunSpecs(t, "Syncservice Suite")
 }

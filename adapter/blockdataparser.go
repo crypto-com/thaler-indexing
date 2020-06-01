@@ -375,7 +375,7 @@ func parseValidatorUpdates(validatorUpdates []tenderminttypes.BlockResultsValida
 
 	councilNodeUpdates := make([]chainindex.CouncilNodeUpdate, 0)
 	for _, validatorUpdate := range validatorUpdates {
-		// nolint:scopelint
+		// nolint:gosec,scopelint
 		if isValidatorKicked(&validatorUpdate) {
 			councilNodeUpdates = append(councilNodeUpdates, chainindex.CouncilNodeUpdate{
 				Address: validatorUpdate.PubKey.Address,
