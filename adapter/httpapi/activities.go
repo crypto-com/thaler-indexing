@@ -123,10 +123,6 @@ func (handler *ActivitiesHandler) ListEvents(resp http.ResponseWriter, req *http
 
 	blockTransactions, paginationResult, err := handler.activityView.ListEvents(filter, pagination)
 	if err != nil {
-		if err == adapter.ErrNotFound {
-			NotFound(resp)
-			return
-		}
 		handler.logger.Errorf("error listing events: %v", err)
 		InternalServerError(resp)
 		return

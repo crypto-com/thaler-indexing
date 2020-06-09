@@ -39,12 +39,12 @@ func NewZerologLoggerWithColor(output io.Writer) *ZerologLogger {
 }
 
 func (logger *ZerologLogger) SetLogLevel(level usecase.LogLevel) {
-	updatedLogger := logger.instance.Level(zerologLevelFromLogLevel(level))
+	updatedLogger := logger.instance.Level(logLevelToZerologLevel(level))
 
 	logger.instance = &updatedLogger
 }
 
-func zerologLevelFromLogLevel(logLevel usecase.LogLevel) zerolog.Level {
+func logLevelToZerologLevel(logLevel usecase.LogLevel) zerolog.Level {
 	switch logLevel {
 	case usecase.LOG_DISABLED:
 		return zerolog.Disabled
@@ -56,6 +56,27 @@ func zerologLevelFromLogLevel(logLevel usecase.LogLevel) zerolog.Level {
 		return zerolog.InfoLevel
 	case usecase.LOG_LEVEL_DEBUG:
 		return zerolog.DebugLevel
+	default:
+		panic(fmt.Sprintf("Unsupported log level %v", logLevel))
+	}
+}
+
+func (logger *ZerologLogger) GetLogLevel() usecase.LogLevel {
+	return zerologLevelToLogLevel(logger.instance.GetLevel())
+}
+
+func zerologLevelToLogLevel(logLevel zerolog.Level) usecase.LogLevel {
+	switch logLevel {
+	case zerolog.Disabled:
+		return usecase.LOG_DISABLED
+	case zerolog.PanicLevel:
+		return usecase.LOG_LEVEL_PANIC
+	case zerolog.ErrorLevel:
+		return usecase.LOG_LEVEL_ERROR
+	case zerolog.InfoLevel:
+		return usecase.LOG_LEVEL_INFO
+	case zerolog.DebugLevel:
+		return usecase.LOG_LEVEL_DEBUG
 	default:
 		panic(fmt.Sprintf("Unsupported log level %v", logLevel))
 	}

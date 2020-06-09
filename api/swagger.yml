@@ -6,7 +6,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 0.0.1
+  version: 0.0.2
 externalDocs:
   description: Find out more about Crypto.com Chain
   url: https://chain.crypto.com
@@ -18,6 +18,14 @@ tags:
 - name: server
   description: Indexing service server status
 paths:
+  /health:
+    summary: Health check endpoint
+    get:
+      tags:
+      - server
+      responses:
+        200:
+          description: health check endpoint
   /status:
     get:
       tags:
@@ -28,7 +36,10 @@ paths:
           content: 
             application/json:
               schema:
-                $ref: '#/components/schemas/Status' 
+                type: object
+                properties:
+                  results:
+                    $ref: '#/components/schemas/Status' 
   /chain/status:
     get:
       tags:
@@ -39,7 +50,10 @@ paths:
           content: 
             application/json:
               schema:
-                $ref: '#/components/schemas/ChainStatus' 
+                type: object
+                properties:
+                  results:
+                    $ref: '#/components/schemas/ChainStatus' 
   /chain/blocks:
     get:
       tags:
@@ -64,6 +78,24 @@ paths:
                       $ref: '#/components/schemas/ChainBlock' 
                   pagination:
                     $ref: '#/components/schemas/Pagination'
+  /chain/blocks/{height}:
+    get:
+      tags:
+        - blockchain
+      parameters:
+        - name: height
+          in: path
+          description: block height
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChainBlock' 
   /chain/blocks/{height}/transactions:
     get:
       tags:
@@ -124,7 +156,7 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ChainEvent' 
+                      $ref: '#/components/schemas/ChainBlockEvent' 
                   pagination:
                     $ref: '#/components/schemas/Pagination'
   /chain/transactions:
@@ -159,11 +191,9 @@ paths:
       parameters: 
         - name: txid
           in: path
-          description: limits the number of returned results
           required: true
           schema:
-            type: integer
-            format: int32
+            type: string
       responses:
         200:
           description: successful operation
@@ -196,6 +226,24 @@ paths:
                       $ref: '#/components/schemas/ChainEvent' 
                   pagination:
                     $ref: '#/components/schemas/Pagination'
+  /chain/events/{event-id}:
+    get:
+      tags:
+        - blockchain
+      parameters: 
+        - name: event-id
+          in: path
+          description: "{blockHeight}-{eventPosition} e.g. 10-0"
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChainEvent' 
   /chain/council-nodes:
     get:
       tags:
@@ -216,7 +264,7 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ChainCouncilNode' 
+                      $ref: '#/components/schemas/ChainCouncilNodeListItem' 
                   pagination:
                     $ref: '#/components/schemas/Pagination'
   /chain/council-nodes/{council-node-id}:
@@ -237,7 +285,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ChainCouncilNode'
+                $ref: '#/components/schemas/ChainCouncilNodeDetails'
         404:
           description: council node not found
   /chain/council-nodes/{council-node-id}/activities:
@@ -300,6 +348,13 @@ paths:
                         type: array
                         items:
                           $ref: '#/components/schemas/ChainTransaction'
+                  events:
+                    type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ChainEvent'
                   staking_accounts:
                     type: object
                     properties:
@@ -313,15 +368,7 @@ paths:
                       results:
                         type: array
                         items:
-                          $ref: '#/components/schemas/ChainCouncilNode'
-                  pub_keys:
-                    type: object
-                    properties:
-                      results:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/ChainStakingAccountAddress'
-
+                          $ref: '#/components/schemas/ChainCouncilNodeDetails'
 
 components:
   parameters:
@@ -342,7 +389,7 @@ components:
       schema:
         type: string
         enum:
-        - page
+        - offset
         - cursor
     PrevCursor:
       name: prev_cursor
@@ -370,7 +417,7 @@ components:
         format: int32
         default: 1
     FilterChainTransactionType:
-      name: filter_transaction_type
+      name: transaction_type
       in: query
       schema:
         type: string
@@ -389,7 +436,7 @@ components:
         type: string
         example: 'transfer,deposit'
     FilterChainEventType:
-      name: filter_event_type
+      name: event_type
       in: query
       schema:
         type: string
@@ -398,7 +445,7 @@ components:
         - jail
         - slash
     FilterChainEventTypes:
-      name: filter_event_types
+      name: event_types
       in: query
       description: comma separated event types
       schema:
@@ -477,14 +524,12 @@ components:
       type: string
       enum:
         - healthy
-        - starting
         - sycnhronizing
         - unhealthy
-        - stopping
     ChainTendermintStatus:
       type: string
       enum:
-        - online
+        - healthy
         - degraded
         - offline
     ChainBlock:
@@ -496,12 +541,45 @@ components:
           $ref: '#/components/schemas/ChainBlockHeight'
         time:
           $ref: '#/components/schemas/ChainBlockTime'
+        app_hash:
+          type: string
         transactions_count:
           type: integer
           format: int32
-        council_node_id:
+        events_count:
           type: integer
-          format: int64
+          format: int32
+        council_nodes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              signature:
+                type: string
+              is_proposer:
+                type: boolean
+    ChainStakingAccount:
+      type: object
+      properties:
+        address:
+          $ref: '#/components/schemas/ChainStakingAccountAddress'
+        nonce:
+          $ref: '#/components/schemas/ChainStakingAccountNonce'
+        bonded:
+          $ref: '#/components/schemas/ChainCoin'
+        unbonded:
+          $ref: '#/components/schemas/ChainCoin'
+        unbonded_from:
+          $ref: '#/components/schemas/ChainStakingAccountUnbondedFrom'
+        jailed_until:
+          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
+        punishment_kind:
+          $ref: '#/components/schemas/ChainPunishmentKind'
+        current_council_node:
+          $ref: '#/components/schemas/ChainCouncilNodeMeta'
     ChainActivity:
       type: object
       properties:
@@ -530,39 +608,72 @@ components:
         staking_address:
           type: string
           format: string
-        bonded_amount:
+        bonded:
           $ref: '#/components/schemas/ChainCoin'
-        unbonded_amount:
+        unbonded:
           $ref: '#/components/schemas/ChainCoin'
     ChainTransaction:
       type: object
       properties:
-        txid:
-          $ref: '#/components/schemas/ChainTransactionId'
         type:
           $ref: '#/components/schemas/ChainTransactionType'
-        fee:
-          $ref: '#/components/schemas/ChainCoin'
         block_height:
           $ref: '#/components/schemas/ChainBlockHeight'
         block_time:
           $ref: '#/components/schemas/ChainBlockTime'
         block_hash:
           $ref: '#/components/schemas/ChainBlockHash'
+        txid:
+          $ref: '#/components/schemas/ChainTransactionId'
+        fee:
+          $ref: '#/components/schemas/ChainCoin'
         inputs:
           type: array
           items:
             $ref: '#/components/schemas/ChainInput'
-        outputs_count:
-          type: integer
-          format: int32
-        staking_address:
-          type: string
-          format: string
-        bonded_amount:
+        output_count:
+          $ref: '#/components/schemas/ChainOutputCount'
+        staking_account_address:
+          $ref: '#/components/schemas/ChainStakingAccountAddress'
+        staking_account_nonce:
+          $ref: '#/components/schemas/ChainStakingAccountNonce'
+        bonded:
           $ref: '#/components/schemas/ChainCoin'
-        unbonded_amount:
+        unbonded:
           $ref: '#/components/schemas/ChainCoin'
+        unbonded_from:
+          $ref: '#/components/schemas/ChainStakingAccountUnbondedFrom'
+        joined_council_node:
+          $ref: '#/components/schemas/ChainCouncilNodeMeta'
+    ChainBlockEvent:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/ChainEventType'
+        block_height:
+          $ref: '#/components/schemas/ChainBlockHeight'
+        block_time:
+          $ref: '#/components/schemas/ChainBlockTime'
+        block_hash:
+          $ref: '#/components/schemas/ChainBlockHash'
+        event_position:
+          $ref: '#/components/schemas/ChainEventPosition'
+        staking_account_address:
+          $ref: '#/components/schemas/ChainStakingAccountAddress'
+        bonded:
+          $ref: '#/components/schemas/ChainCoin'
+        unbonded:
+          $ref: '#/components/schemas/ChainCoin'
+        reward_minted:
+          $ref: '#/components/schemas/ChainCoin'
+        reward_distribution:
+          $ref: '#/components/schemas/ChainRewardDistribution'
+        jailed_until:
+          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
+        punishment_kind:
+          $ref: '#/components/schemas/ChainPunishmentKind'
+        affected_council_node:
+          $ref: '#/components/schemas/ChainCouncilNodeMeta'
     ChainEvent:
       type: object
       properties:
@@ -574,21 +685,20 @@ components:
           $ref: '#/components/schemas/ChainBlockTime'
         block_hash:
           $ref: '#/components/schemas/ChainBlockHash'
-        position:
-          type: integer
-          format: int32
-        staking_address:
+        event_position:
+          $ref: '#/components/schemas/ChainEventPosition'
+        staking_account_address:
           $ref: '#/components/schemas/ChainStakingAccountAddress'
-        bonded_amount:
+        bonded:
           $ref: '#/components/schemas/ChainCoin'
-        unbonded_amount:
+        unbonded:
           $ref: '#/components/schemas/ChainCoin'
-        reward_minted:
-          $ref: '#/components/schemas/ChainCoin'
-        reward_distribution:
-          $ref: '#/components/schemas/ChainRewardDistribution'
-        reason:
-          type: string
+        jailed_until:
+          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
+        punishment_kind:
+          $ref: '#/components/schemas/ChainPunishmentKind'
+        affected_council_node:
+          $ref: '#/components/schemas/ChainCouncilNodeMeta'
     ChainRewardDistribution:
       type: array
       items:
@@ -596,28 +706,118 @@ components:
         properties:
           staking_address:
             $ref: '#/components/schemas/ChainStakingAccountAddress'
-          bonded_amount:
+          bonded:
             $ref: '#/components/schemas/ChainCoin'
-    ChainCouncilNode:
+    ChainPunishmentKind:
+      type: string
+      enum:
+        - ByzantineFault
+        - NonLive
+    ChainCouncilNodeMeta:
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
         name:
           type: string
+        status:
+          $ref: '#/components/schemas/ChainCouncilNodeStatus'
         security_contact:
           $ref: '#/components/schemas/ChainSecurityContact'
+        pubkey_type:
+          $ref: '#/components/schemas/ChainTendermintPubKeyType'
+        pubkey:
+          $ref: '#/components/schemas/ChainTendermintPubKey'
+        address:
+          $ref: '#/components/schemas/ChainTendermintAddress'
+        created_at_block_height:
+          $ref: '#/components/schemas/ChainBlockHeight'
+        last_left_at_block_height:
+          $ref: '#/components/schemas/ChainBlockHeight'
+    ChainCouncilNodeListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/ChainCouncilNodeStatus'
+        security_contact:
+          $ref: '#/components/schemas/ChainSecurityContact'
+        pubkey_type:
+          $ref: '#/components/schemas/ChainTendermintPubKeyType'
+        pubkey:
+          $ref: '#/components/schemas/ChainTendermintPubKey'
+        address:
+          $ref: '#/components/schemas/ChainTendermintAddress'
         staking_account_address:
           $ref: '#/components/schemas/ChainStakingAccountAddress'
+        staking_account_nonce:
+          $ref: '#/components/schemas/ChainStakingAccountNonce'
+        staking_account_bonded:
+          $ref: '#/components/schemas/ChainCoin'
+        staking_account_unbonded:
+          $ref: '#/components/schemas/ChainCoin'
+        staking_account_unbonded_from:
+          $ref: '#/components/schemas/ChainStakingAccountUnbondedFrom'
+        staking_account_jailed_until:
+          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
+        staking_account_punishment_kind:
+          $ref: '#/components/schemas/ChainPunishmentKind'
+        created_at_block_height:
+          $ref: '#/components/schemas/ChainBlockHeight'
+        last_left_at_block_height:
+          $ref: '#/components/schemas/ChainBlockHeight'
+        share_percentage:
+          type: number
+          format: float
+        cumulative_share_percentage:
+          type: number
+          format: float
+    ChainCouncilNodeDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        status:
+          $ref: '#/components/schemas/ChainCouncilNodeStatus'
+        security_contact:
+          $ref: '#/components/schemas/ChainSecurityContact'
         public_key:
           $ref: '#/components/schemas/ChainTendermintPubKey'
         address:
           $ref: '#/components/schemas/ChainTendermintAddress'
-        first_seen:
-          type: string
-          example: "2019-04-22T17:01:51.701356223Z"
+        staking_account_address:
+          $ref: '#/components/schemas/ChainStakingAccountAddress'
+        staking_account_nonce:
+          $ref: '#/components/schemas/ChainStakingAccountNonce'
+        staking_account_bonded:
+          $ref: '#/components/schemas/ChainCoin'
+        staking_account_unbonded:
+          $ref: '#/components/schemas/ChainCoin'
+        staking_account_unbonded_from:
+          $ref: '#/components/schemas/ChainStakingAccountUnbondedFrom'
+        staking_account_jailed_until:
+          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
+        staking_account_punishment_kind:
+          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
+        created_at_block_height:
+          $ref: '#/components/schemas/ChainBlockHeight'
+        last_left_at_block_height:
+          $ref: '#/components/schemas/ChainBlockHeight'
     ChainTransactionId:
       type: string
       format: string
       example: 'f7e6707af91fc804d14aea581c5c9d98956df00da0469f19709623d886b266f7'
+    ChainEventPosition:
+      type: integer
+      format: int32
     ChainTransactionType:
       type: string
       enum:
@@ -645,21 +845,27 @@ components:
         - reward
         - jail
         - slash
+    ChainCouncilNodeStatus:
+      type: string
+      enum:
+        - bonded
+        - jailed
+        - inactive
     ChainSecurityContact:
       type: string
       example: 'security@crypto.com'
     ChainStakingAccountAddress:
       type: string
       example: '0x2dfde2178daa679508828242119dcf2114038ea8'
+    ChainStakingAccountNonce:
+      type: integer
+      format: int32
+    ChainTendermintPubKeyType:
+      type: string
+      example: 'ed25519'
     ChainTendermintPubKey:
-      type: object
-      properties:
-        type:
-          type: string
-          example: 'ed25519'
-        pubkey:
-          type: string
-          example: 'OOMs4I5xwVw0kSDJHtd6ZQACZiv1YRi+OWVsc41VdE8='
+      type: string
+      example: 'OOMs4I5xwVw0kSDJHtd6ZQACZiv1YRi+OWVsc41VdE8='
     ChainTendermintAddress:
       type: string
     ChainTransferAddress:
@@ -675,6 +881,12 @@ components:
     ChainBlockTime:
       type: string
       example: "2019-04-22T17:01:51.701356223Z"
+    ChainStakingAccountUnbondedFrom:
+      type: string
+      example: "2019-04-22T17:01:51.701356223Z"
+    ChainStakingAccountJailedUntil:
+      type: string
+      example: "2019-04-22T17:01:51.701356223Z"
     ChainBlockHash:
       type: string
     ChainInput:
@@ -685,6 +897,9 @@ components:
         prev_output_index:
           type: integer
           format: int32
+    ChainOutputCount:
+      type: integer
+      format: int32
     Pagination:
       description: page based pagination info. Only return when pagination parameter is page
       type: object
@@ -692,9 +907,11 @@ components:
         current_page:
           type: integer
         total_page:
-          type: number
+          type: integer
+        total_record:
+          type: integer
         limit:
-          type: number
+          type: integer
     CursorPagination:
       description: cursor pagination info. Only return when pagination parameter is cursor
       type: object

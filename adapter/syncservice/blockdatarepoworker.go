@@ -62,7 +62,7 @@ func (worker *DefaultBlockDataRepoWorker) processBlockData(blockData *usecase.Bl
 	logger := worker.logger.WithFields(usecase.LogFields{
 		"blockHeight": blockData.Block.Height,
 	})
-	logger.Info("storing block data")
+	logger.Debug("storing block data")
 
 	err := worker.blockDataRepo.Store(blockData)
 	if err != nil {

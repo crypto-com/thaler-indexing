@@ -2,6 +2,7 @@ package usecase
 
 type Logger interface {
 	SetLogLevel(level LogLevel)
+	GetLogLevel() LogLevel
 
 	Panic(message string)
 	Panicf(format string, values ...interface{})

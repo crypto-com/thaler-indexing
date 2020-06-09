@@ -62,6 +62,19 @@ var _ = Describe("Zerolog", func() {
 		})
 	})
 
+	Describe("GetLogLevel", func() {
+		It("should return current log level", func() {
+			mockWriter := NewMockWriter()
+			logger := infrastructure.NewZerologLogger(mockWriter)
+
+			logger.SetLogLevel(usecase.LOG_DISABLED)
+			Expect(logger.GetLogLevel()).To(Equal(usecase.LOG_DISABLED))
+
+			logger.SetLogLevel(usecase.LOG_LEVEL_DEBUG)
+			Expect(logger.GetLogLevel()).To(Equal(usecase.LOG_LEVEL_DEBUG))
+		})
+	})
+
 	Describe("Panic", func() {
 		It("should panic", func() {
 			mockWriter := NewMockWriter()

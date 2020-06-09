@@ -8,7 +8,10 @@ func NewFakeLogger() *FakeLogger {
 	return &FakeLogger{}
 }
 
-func (logger *FakeLogger) SetLogLevel(_ usecase.LogLevel)    {}
+func (logger *FakeLogger) SetLogLevel(_ usecase.LogLevel) {}
+func (logger *FakeLogger) GetLogLevel() usecase.LogLevel {
+	return usecase.LOG_LEVEL_INFO
+}
 func (logger *FakeLogger) Panic(_ string)                    {}
 func (logger *FakeLogger) Panicf(_ string, _ ...interface{}) {}
 func (logger *FakeLogger) Error(_ string)                    {}

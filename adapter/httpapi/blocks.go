@@ -111,6 +111,10 @@ func (handler *BlocksHandler) ListBlockTransactions(resp http.ResponseWriter, re
 		*blockIdentity, pagination,
 	)
 	if err != nil {
+		if err == adapter.ErrNotFound {
+			NotFound(resp)
+			return
+		}
 		handler.logger.Errorf("error listing block transactions: %v", err)
 		InternalServerError(resp)
 		return
@@ -139,6 +143,10 @@ func (handler *BlocksHandler) ListBlockEvents(resp http.ResponseWriter, req *htt
 		*blockIdentity, pagination,
 	)
 	if err != nil {
+		if err == adapter.ErrNotFound {
+			NotFound(resp)
+			return
+		}
 		handler.logger.Errorf("error listing block events: %v", err)
 		InternalServerError(resp)
 		return
@@ -161,6 +169,10 @@ func parseBlockIdentity(routeVars map[string]string) (*viewrepo.BlockIdentity, e
 		height, err := strconv.ParseUint(identityVar, 10, 64)
 		if err != nil {
 			return nil, errors.New("invalid height path parameter")
+		}
+
+		if height == 0 {
+			return nil, errors.New("block height cannot be 0")
 		}
 		blockIdentity.MaybeHeight = &height
 	}

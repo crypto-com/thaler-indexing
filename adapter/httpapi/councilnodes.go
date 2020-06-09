@@ -99,6 +99,10 @@ func (handler *CouncilNodesHandler) ListCouncilNodeActivitiesById(resp http.Resp
 
 	activities, paginationResult, err := handler.councilNodeView.ListActivitiesById(councilNodeId, pagination)
 	if err != nil {
+		if err == adapter.ErrNotFound {
+			NotFound(resp)
+			return
+		}
 		handler.logger.Errorf("error listing council node activities: %v", err)
 		InternalServerError(resp)
 		return

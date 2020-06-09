@@ -236,6 +236,8 @@ func (repo *RDbBlockViewRepo) ListBlockTransactions(
 ) ([]viewrepo.Transaction, *viewrepo.PaginationResult, error) {
 	var err error
 
+	// TODO: Check block existence
+
 	selectBuilder := repo.stmtBuilder.Select(
 		"a.type",
 		"a.block_height",
@@ -373,6 +375,8 @@ func (repo *RDbBlockViewRepo) ListBlockEvents(
 	pagination *viewrepo.Pagination,
 ) ([]viewrepo.BlockEvent, *viewrepo.PaginationResult, error) {
 	var err error
+
+	// TODO: Check block existence
 
 	var whereClause string
 	var whereArgs interface{}
