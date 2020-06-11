@@ -42,8 +42,10 @@ RUN apt-get update && apt-get install -y \
     pip install awscli && \
     rm -rf /var/lib/apt/lists/*
 
+RUN go get -tags 'postgres' -u github.com/golang-migrate/migrate/cmd/migrate
+
 COPY --from=builder "/go/src/github.com/crypto-com/chainindex/chainindex" .
+COPY ./migrations ./migrations
+COPY ./migrate.sh migrate
 
 EXPOSE 28857
-
-ENTRYPOINT [ "./chainindex" ]
