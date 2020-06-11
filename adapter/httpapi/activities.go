@@ -44,7 +44,7 @@ func (handler *ActivitiesHandler) ListTransactions(resp http.ResponseWriter, req
 		MaybeTypes: make([]chainindex.TransactionType, 0),
 	}
 
-	filterTypes := req.URL.Query().Get("filter[type]")
+	filterTypes := req.URL.Query().Get("types")
 	if filterTypes != "" {
 		filterTypeInputs := strings.Split(filterTypes, ",")
 		for _, input := range filterTypeInputs {
@@ -108,7 +108,7 @@ func (handler *ActivitiesHandler) ListEvents(resp http.ResponseWriter, req *http
 	filter := viewrepo.EventFilter{
 		MaybeTypes: make([]chainindex.TransactionType, 0),
 	}
-	filterTypes := req.URL.Query().Get("filter[type]")
+	filterTypes := req.URL.Query().Get("types")
 	if filterTypes != "" {
 		filterTypeInputs := strings.Split(filterTypes, ",")
 		for _, input := range filterTypeInputs {

@@ -44,7 +44,7 @@ var _ = Describe("Activities", func() {
 
 		It("should return BadRequest when type filter has invalid type", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[type]": "invalid",
+				"types": "invalid",
 			})
 			respSpy := httptest.NewRecorder()
 
@@ -55,7 +55,7 @@ var _ = Describe("Activities", func() {
 
 		It("should return BadRequest when type filter has mixed valid and invalid types", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[type]": "transfer,invalid",
+				"types": "transfer,invalid",
 			})
 			respSpy := httptest.NewRecorder()
 
@@ -66,7 +66,7 @@ var _ = Describe("Activities", func() {
 
 		It("should return BadRequest when type filter is not using command as separator", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[type]": "transfer;reward",
+				"types": "transfer;reward",
 			})
 			respSpy := httptest.NewRecorder()
 
@@ -120,7 +120,7 @@ var _ = Describe("Activities", func() {
 
 		It("should return BadRequest when type filter has invalid type", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[type]": "invalid",
+				"types": "invalid",
 			})
 			respSpy := httptest.NewRecorder()
 
@@ -131,7 +131,7 @@ var _ = Describe("Activities", func() {
 
 		It("should return BadRequest when type filter has mixed valid and invalid types", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[type]": "transfer,invalid",
+				"types": "transfer,invalid",
 			})
 			respSpy := httptest.NewRecorder()
 
@@ -142,7 +142,7 @@ var _ = Describe("Activities", func() {
 
 		It("should return BadRequest when type filter is not using command as separator", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[type]": "transfer;reward",
+				"types": "transfer;reward",
 			})
 			respSpy := httptest.NewRecorder()
 

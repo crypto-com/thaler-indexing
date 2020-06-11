@@ -42,7 +42,7 @@ func (handler *BlocksHandler) ListBlocks(resp http.ResponseWriter, req *http.Req
 	filter := viewrepo.BlockFilter{
 		MaybeProposers: make([]uint64, 0),
 	}
-	filterProposerIds := req.URL.Query().Get("filter[proposer_id]")
+	filterProposerIds := req.URL.Query().Get("proposer_ids")
 	if filterProposerIds != "" {
 		filterProposerIdInputs := strings.Split(filterProposerIds, ",")
 		for _, input := range filterProposerIdInputs {

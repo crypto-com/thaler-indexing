@@ -43,7 +43,7 @@ var _ = Describe("Blocks", func() {
 
 		It("should return BadRequest when proposer id filter has invalid type", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[proposer_id]": "invalid",
+				"proposer_ids": "invalid",
 			})
 			respSpy := httptest.NewRecorder()
 
@@ -54,7 +54,7 @@ var _ = Describe("Blocks", func() {
 
 		It("should return BadRequest when proposer id filter is non-positive-integer", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[proposer_id]": "-1",
+				"proposer_ids": "-1",
 			})
 			respSpy := httptest.NewRecorder()
 
@@ -65,7 +65,7 @@ var _ = Describe("Blocks", func() {
 
 		It("should return BadRequest when proposer id filter is non-integer", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[proposer_id]": "1.1",
+				"proposer_ids": "1.1",
 			})
 			respSpy := httptest.NewRecorder()
 
@@ -76,7 +76,7 @@ var _ = Describe("Blocks", func() {
 
 		It("should return BadRequest when proposer id filter is not separated by comma", func() {
 			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
-				"filter[proposer_id]": "1;2",
+				"proposer_ids": "1;2",
 			})
 			respSpy := httptest.NewRecorder()
 
