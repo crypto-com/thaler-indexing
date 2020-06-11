@@ -8,7 +8,7 @@ import (
 )
 
 type CouncilNodeViewRepo interface {
-	ListActivities(pagination *Pagination) ([]CouncilNodeListItem, *PaginationResult, error)
+	ListActive(pagination *Pagination) ([]CouncilNodeListItem, *PaginationResult, error)
 	FindById(id uint64) (*CouncilNode, error)
 	ListActivitiesById(id uint64, filter ActivityFilter, pagination *Pagination) ([]StakingAccountActivity, *PaginationResult, error)
 
@@ -20,6 +20,7 @@ type CouncilNodeViewRepo interface {
 type CouncilNodeListItem struct {
 	Id                         uint64                     `json:"id"`
 	Name                       string                     `json:"name"`
+	Status                     string                     `json:"status"`
 	MaybeSecurityContact       *string                    `json:"security_contact"`
 	PubKeyType                 string                     `json:"pubkey_type"`
 	PubKey                     string                     `json:"pubkey"`
@@ -34,6 +35,7 @@ type CouncilNodeListItem struct {
 type CouncilNode struct {
 	Id                         uint64                     `json:"id"`
 	Name                       string                     `json:"name"`
+	Status                     string                     `json:"status"`
 	MaybeSecurityContact       *string                    `json:"security_contact"`
 	PubKeyType                 string                     `json:"pubkey_type"`
 	PubKey                     string                     `json:"pubkey"`

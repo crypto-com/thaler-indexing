@@ -18,11 +18,11 @@ type SearchHandler struct {
 }
 
 type SearchAllResult struct {
-	Blocks          []viewrepo.Block
-	Transactions    []viewrepo.Transaction
-	Events          []viewrepo.Event
-	StakingAccounts []viewrepo.StakingAccount
-	CouncilNodes    []viewrepo.CouncilNode
+	Blocks          []viewrepo.Block          `json:"blocks"`
+	Transactions    []viewrepo.Transaction    `json:"transactions"`
+	Events          []viewrepo.Event          `json:"events"`
+	StakingAccounts []viewrepo.StakingAccount `json:"staking_accounts"`
+	CouncilNodes    []viewrepo.CouncilNode    `json:"council_nodes"`
 }
 
 func NewSearchHandler(

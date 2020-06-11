@@ -62,8 +62,8 @@ paths:
       - $ref: '#/components/parameters/Limit'
       - $ref: '#/components/parameters/Page'
       - $ref: '#/components/parameters/Pagination'
-      - $ref: '#/components/parameters/PrevCursor'
-      - $ref: '#/components/parameters/NextCursor'
+      # - $ref: '#/components/parameters/PrevCursor'
+      # - $ref: '#/components/parameters/NextCursor'
       responses:
         200:
           description: successful operation
@@ -96,6 +96,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChainBlock' 
+        404:
+          description: block not found
   /chain/blocks/{height}/transactions:
     get:
       tags:
@@ -111,8 +113,8 @@ paths:
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/Pagination'
-        - $ref: '#/components/parameters/PrevCursor'
-        - $ref: '#/components/parameters/NextCursor'
+        # - $ref: '#/components/parameters/PrevCursor'
+        # - $ref: '#/components/parameters/NextCursor'
       responses:
         200:
           description: successful operation
@@ -143,8 +145,8 @@ paths:
         - $ref: '#/components/parameters/Limit'
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/Pagination'
-        - $ref: '#/components/parameters/PrevCursor'
-        - $ref: '#/components/parameters/NextCursor'
+        # - $ref: '#/components/parameters/PrevCursor'
+        # - $ref: '#/components/parameters/NextCursor'
       responses:
         200:
           description: successful operation
@@ -168,8 +170,8 @@ paths:
       - $ref: '#/components/parameters/Limit'
       - $ref: '#/components/parameters/Page'
       - $ref: '#/components/parameters/Pagination'
-      - $ref: '#/components/parameters/PrevCursor'
-      - $ref: '#/components/parameters/NextCursor'
+      # - $ref: '#/components/parameters/PrevCursor'
+      # - $ref: '#/components/parameters/NextCursor'
       responses:
         200:
           description: successful operation
@@ -210,8 +212,8 @@ paths:
       - $ref: '#/components/parameters/Limit'
       - $ref: '#/components/parameters/Page'
       - $ref: '#/components/parameters/Pagination'
-      - $ref: '#/components/parameters/PrevCursor'
-      - $ref: '#/components/parameters/NextCursor'
+      # - $ref: '#/components/parameters/PrevCursor'
+      # - $ref: '#/components/parameters/NextCursor'
       responses:
         200:
           description: successful operation
@@ -252,8 +254,8 @@ paths:
       - $ref: '#/components/parameters/Limit'
       - $ref: '#/components/parameters/Page'
       - $ref: '#/components/parameters/Pagination'
-      - $ref: '#/components/parameters/PrevCursor'
-      - $ref: '#/components/parameters/NextCursor'
+      # - $ref: '#/components/parameters/PrevCursor'
+      # - $ref: '#/components/parameters/NextCursor'
       responses:
         200:
           description: successful operation
@@ -300,6 +302,9 @@ paths:
           schema:
             type: integer
             format: int32
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Pagination'
       responses:
         200:
           description: successful operation
@@ -361,7 +366,7 @@ paths:
                       results:
                         type: array
                         items:
-                          $ref: '#/components/schemas/ChainStakingAccountAddress'
+                          $ref: '#/components/schemas/ChainStakingAccount'
                   council_nodes:
                     type: object
                     properties:
@@ -390,7 +395,7 @@ components:
         type: string
         enum:
         - offset
-        - cursor
+        # - cursor
     PrevCursor:
       name: prev_cursor
       in: query
@@ -429,7 +434,7 @@ components:
         - nodejoin
         - unjail
     FilterChainTransactionTypes:
-      name: transaction_types
+      name: types
       in: query
       description: comma separated transaction types
       schema:
@@ -445,7 +450,7 @@ components:
         - jail
         - slash
     FilterChainEventTypes:
-      name: event_types
+      name: types
       in: query
       description: comma separated event types
       schema:
@@ -499,16 +504,10 @@ components:
         total_reward:
           description: total reward
           type: string
-        council_nodes:
-          type: object
-          $ref: '#/components/schemas/ChainCouncilNodesStatus'
-    ChainCouncilNodesStatus:
-      type: object
-      properties:
-        count:
+        council_node_count:
           type: integer
           format: int32
-        total_staked:
+        total_council_node_staked:
           description: Total validator staked amount in basic unit
           $ref: '#/components/schemas/ChainCoin'
     Status:
@@ -543,24 +542,36 @@ components:
           $ref: '#/components/schemas/ChainBlockTime'
         app_hash:
           type: string
-        transactions_count:
+        proposer:
+          $ref: '#/components/schemas/ChainBlockProposer'
+        transaction_count:
           type: integer
           format: int32
-        events_count:
+        event_count:
           type: integer
           format: int32
-        council_nodes:
+        committed_council_nodes:
           type: array
           items:
             type: object
-            properties:
-              id:
-                type: integer
-                format: int64
-              signature:
-                type: string
-              is_proposer:
-                type: boolean
+            $ref: '#/components/schemas/ChainBlockProposer'
+    ChainCouncilNodeStakingAccount:
+      type: object
+      properties:
+        address:
+          $ref: '#/components/schemas/ChainStakingAccountAddress'
+        nonce:
+          $ref: '#/components/schemas/ChainStakingAccountNonce'
+        bonded:
+          $ref: '#/components/schemas/ChainCoin'
+        unbonded:
+          $ref: '#/components/schemas/ChainCoin'
+        unbonded_from:
+          $ref: '#/components/schemas/ChainStakingAccountUnbondedFrom'
+        jailed_until:
+          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
+        punishment_kind:
+          $ref: '#/components/schemas/ChainPunishmentKind'
     ChainStakingAccount:
       type: object
       properties:
@@ -585,19 +596,19 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/ChainActivityType'
-        txid:
-          $ref: '#/components/schemas/ChainTransactionId'
-        event_position:
-          type: integer
-          format: int32
-        fee:
-          $ref: '#/components/schemas/ChainCoin'
         block_height:
           $ref: '#/components/schemas/ChainBlockHeight'
         block_time:
           $ref: '#/components/schemas/ChainBlockTime'
         block_hash:
           $ref: '#/components/schemas/ChainBlockHash'
+        txid:
+          $ref: '#/components/schemas/ChainTransactionId'
+        fee:
+          $ref: '#/components/schemas/ChainCoin'
+        event_position:
+          type: integer
+          format: int32
         inputs:
           type: array
           items:
@@ -605,13 +616,24 @@ components:
         outputs_count:
           type: integer
           format: int32
-        staking_address:
-          type: string
-          format: string
+        staking_account_address:
+          $ref: '#/components/schemas/ChainStakingAccountAddress'
+        staking_account_nonce:
+          $ref: '#/components/schemas/ChainStakingAccountNonce'
         bonded:
           $ref: '#/components/schemas/ChainCoin'
         unbonded:
           $ref: '#/components/schemas/ChainCoin'
+        unbonded_from:
+          $ref: '#/components/schemas/ChainStakingAccountUnbondedFrom'
+        joined_council_node:
+          $ref: '#/components/schemas/ChainCouncilNodeMeta'
+        jailed_until:
+          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
+        punishment_kind:
+          $ref: '#/components/schemas/ChainPunishmentKind'
+        affected_council_node:
+          $ref: '#/components/schemas/ChainCouncilNodeMeta'
     ChainTransaction:
       type: object
       properties:
@@ -644,6 +666,8 @@ components:
         unbonded_from:
           $ref: '#/components/schemas/ChainStakingAccountUnbondedFrom'
         joined_council_node:
+          $ref: '#/components/schemas/ChainCouncilNodeMeta'
+        affected_council_node:
           $ref: '#/components/schemas/ChainCouncilNodeMeta'
     ChainBlockEvent:
       type: object
@@ -689,6 +713,8 @@ components:
           $ref: '#/components/schemas/ChainEventPosition'
         staking_account_address:
           $ref: '#/components/schemas/ChainStakingAccountAddress'
+        staking_account_nonce:
+          $ref: '#/components/schemas/ChainStakingAccountNonce'
         bonded:
           $ref: '#/components/schemas/ChainCoin'
         unbonded:
@@ -704,10 +730,14 @@ components:
       items:
         type: object
         properties:
+          event_position:
+            $ref: '#/components/schemas/ChainEventPosition'
           staking_address:
             $ref: '#/components/schemas/ChainStakingAccountAddress'
           bonded:
             $ref: '#/components/schemas/ChainCoin'
+          affected_council_node:
+            $ref: '#/components/schemas/ChainCouncilNodeMeta'
     ChainPunishmentKind:
       type: string
       enum:
@@ -753,20 +783,8 @@ components:
           $ref: '#/components/schemas/ChainTendermintPubKey'
         address:
           $ref: '#/components/schemas/ChainTendermintAddress'
-        staking_account_address:
-          $ref: '#/components/schemas/ChainStakingAccountAddress'
-        staking_account_nonce:
-          $ref: '#/components/schemas/ChainStakingAccountNonce'
-        staking_account_bonded:
-          $ref: '#/components/schemas/ChainCoin'
-        staking_account_unbonded:
-          $ref: '#/components/schemas/ChainCoin'
-        staking_account_unbonded_from:
-          $ref: '#/components/schemas/ChainStakingAccountUnbondedFrom'
-        staking_account_jailed_until:
-          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
-        staking_account_punishment_kind:
-          $ref: '#/components/schemas/ChainPunishmentKind'
+        staking_account:
+          $ref: '#/components/schemas/ChainCouncilNodeStakingAccount'
         created_at_block_height:
           $ref: '#/components/schemas/ChainBlockHeight'
         last_left_at_block_height:
@@ -789,28 +807,20 @@ components:
           $ref: '#/components/schemas/ChainCouncilNodeStatus'
         security_contact:
           $ref: '#/components/schemas/ChainSecurityContact'
-        public_key:
+        pubkey_type:
+          $ref: '#/components/schemas/ChainTendermintPubKeyType'
+        pubkey:
           $ref: '#/components/schemas/ChainTendermintPubKey'
         address:
           $ref: '#/components/schemas/ChainTendermintAddress'
-        staking_account_address:
-          $ref: '#/components/schemas/ChainStakingAccountAddress'
-        staking_account_nonce:
-          $ref: '#/components/schemas/ChainStakingAccountNonce'
-        staking_account_bonded:
-          $ref: '#/components/schemas/ChainCoin'
-        staking_account_unbonded:
-          $ref: '#/components/schemas/ChainCoin'
-        staking_account_unbonded_from:
-          $ref: '#/components/schemas/ChainStakingAccountUnbondedFrom'
-        staking_account_jailed_until:
-          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
-        staking_account_punishment_kind:
-          $ref: '#/components/schemas/ChainStakingAccountJailedUntil'
+        staking_account:
+          $ref: '#/components/schemas/ChainCouncilNodeStakingAccount'
         created_at_block_height:
           $ref: '#/components/schemas/ChainBlockHeight'
         last_left_at_block_height:
           $ref: '#/components/schemas/ChainBlockHeight'
+        is_active:
+          type: boolean
     ChainTransactionId:
       type: string
       format: string
@@ -881,6 +891,17 @@ components:
     ChainBlockTime:
       type: string
       example: "2019-04-22T17:01:51.701356223Z"
+    ChainBlockProposer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          $ref: '#/components/schemas/ChainTendermintAddress'
+        is_proposer:
+          type: boolean
     ChainStakingAccountUnbondedFrom:
       type: string
       example: "2019-04-22T17:01:51.701356223Z"

@@ -31,7 +31,7 @@ func NewCouncilNodesHandler(logger usecase.Logger, routePath RoutePath, councilN
 	}
 }
 
-func (handler *CouncilNodesHandler) ListActiveCouncilNodes(resp http.ResponseWriter, req *http.Request) {
+func (handler *CouncilNodesHandler) ListActive(resp http.ResponseWriter, req *http.Request) {
 	var err error
 
 	pagination, err := ParsePagination(req)
@@ -40,7 +40,7 @@ func (handler *CouncilNodesHandler) ListActiveCouncilNodes(resp http.ResponseWri
 		return
 	}
 
-	councilNodes, paginationResult, err := handler.councilNodeView.ListActivities(pagination)
+	councilNodes, paginationResult, err := handler.councilNodeView.ListActive(pagination)
 	if err != nil {
 		handler.logger.Errorf("error listing council nodes: %v", err)
 		InternalServerError(resp)
@@ -50,7 +50,7 @@ func (handler *CouncilNodesHandler) ListActiveCouncilNodes(resp http.ResponseWri
 	SuccessWithPagination(resp, councilNodes, paginationResult)
 }
 
-func (handler *CouncilNodesHandler) FindCouncilNodeById(resp http.ResponseWriter, req *http.Request) {
+func (handler *CouncilNodesHandler) FindById(resp http.ResponseWriter, req *http.Request) {
 	var err error
 
 	routeVars := handler.routePath.Vars(req)
@@ -79,7 +79,7 @@ func (handler *CouncilNodesHandler) FindCouncilNodeById(resp http.ResponseWriter
 	Success(resp, councilNode)
 }
 
-func (handler *CouncilNodesHandler) ListCouncilNodeActivitiesById(resp http.ResponseWriter, req *http.Request) {
+func (handler *CouncilNodesHandler) ListActivitiesById(resp http.ResponseWriter, req *http.Request) {
 	var err error
 
 	pagination, err := ParsePagination(req)

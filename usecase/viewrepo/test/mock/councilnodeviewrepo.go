@@ -9,7 +9,7 @@ type MockCouncilNodeViewRepo struct {
 	mock.Mock
 }
 
-func (repo *MockCouncilNodeViewRepo) ListActivities(
+func (repo *MockCouncilNodeViewRepo) ListActive(
 	pagination *viewrepo.Pagination,
 ) ([]viewrepo.CouncilNodeListItem, *viewrepo.PaginationResult, error) {
 	args := repo.Called(pagination)

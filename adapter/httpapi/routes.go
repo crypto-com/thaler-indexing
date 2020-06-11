@@ -49,9 +49,9 @@ func (api *RoutesRegistry) RegisterHandlers() {
 	api.router.Get("/chain/events", api.activitiesHandler.ListEvents)
 	api.router.Get("/chain/events/{height}-{position}", api.activitiesHandler.FindEventByBlockHeightEventPosition)
 
-	api.router.Get("/chain/council-nodes", api.councilNodesHandler.ListActiveCouncilNodes)
-	api.router.Get("/chain/council-nodes/{id}", api.councilNodesHandler.FindCouncilNodeById)
-	api.router.Get("/chain/council-nodes/{id}/activities", api.councilNodesHandler.ListCouncilNodeActivitiesById)
+	api.router.Get("/chain/council-nodes", api.councilNodesHandler.ListActive)
+	api.router.Get("/chain/council-nodes/{id}", api.councilNodesHandler.FindById)
+	api.router.Get("/chain/council-nodes/{id}/activities", api.councilNodesHandler.ListActivitiesById)
 
 	api.router.Get("/chain/search/all", api.searchHandler.All)
 }

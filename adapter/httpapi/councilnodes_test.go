@@ -29,27 +29,27 @@ var _ = Describe("CouncilNodes", func() {
 		mockHandler = httpapi.NewCouncilNodesHandler(fakeLogger, mockRoutePath, mockCouncilNodeViewRepo)
 	})
 
-	Describe("ListActiveCouncilNodes", func() {
+	Describe("ListActive", func() {
 		It("should return BadRequest when pagination is missing", func() {
 			reqWithInvalidPage := NewMockHTTPGetRequest(HTTPQueryParams{
 				"page": "invalid",
 			})
 			respSpy := httptest.NewRecorder()
 
-			mockHandler.ListActiveCouncilNodes(respSpy, reqWithInvalidPage)
+			mockHandler.ListActive(respSpy, reqWithInvalidPage)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
 	})
 
-	Describe("FindCouncilNodeById", func() {
+	Describe("FindById", func() {
 		It("should return BadRequest when id is missing", func() {
 			anyReq := NewMockHTTPGetRequest(HTTPQueryParams{})
 			respSpy := httptest.NewRecorder()
 
 			mockRoutePath.On("Vars", mock.Anything).Return(map[string]string{})
 
-			mockHandler.FindCouncilNodeById(respSpy, anyReq)
+			mockHandler.FindById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -62,7 +62,7 @@ var _ = Describe("CouncilNodes", func() {
 				"id": "invalid",
 			})
 
-			mockHandler.FindCouncilNodeById(respSpy, anyReq)
+			mockHandler.FindById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -75,7 +75,7 @@ var _ = Describe("CouncilNodes", func() {
 				"id": "-10",
 			})
 
-			mockHandler.FindCouncilNodeById(respSpy, anyReq)
+			mockHandler.FindById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -88,7 +88,7 @@ var _ = Describe("CouncilNodes", func() {
 				"id": "1.1",
 			})
 
-			mockHandler.FindCouncilNodeById(respSpy, anyReq)
+			mockHandler.FindById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -105,20 +105,20 @@ var _ = Describe("CouncilNodes", func() {
 				"FindById", mock.Anything,
 			).Return((*viewrepo.CouncilNode)(nil), adapter.ErrNotFound)
 
-			mockHandler.FindCouncilNodeById(respSpy, anyReq)
+			mockHandler.FindById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(404))
 		})
 	})
 
-	Describe("ListCouncilNodeActivitiesById", func() {
+	Describe("ListActivitiesById", func() {
 		It("should return BadRequest when id is missing", func() {
 			anyReq := NewMockHTTPGetRequest(HTTPQueryParams{})
 			respSpy := httptest.NewRecorder()
 
 			mockRoutePath.On("Vars", mock.Anything).Return(map[string]string{})
 
-			mockHandler.ListCouncilNodeActivitiesById(respSpy, anyReq)
+			mockHandler.ListActivitiesById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -131,7 +131,7 @@ var _ = Describe("CouncilNodes", func() {
 				"id": "invalid",
 			})
 
-			mockHandler.ListCouncilNodeActivitiesById(respSpy, anyReq)
+			mockHandler.ListActivitiesById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -144,7 +144,7 @@ var _ = Describe("CouncilNodes", func() {
 				"id": "-10",
 			})
 
-			mockHandler.ListCouncilNodeActivitiesById(respSpy, anyReq)
+			mockHandler.ListActivitiesById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -157,7 +157,7 @@ var _ = Describe("CouncilNodes", func() {
 				"id": "1.1",
 			})
 
-			mockHandler.ListCouncilNodeActivitiesById(respSpy, anyReq)
+			mockHandler.ListActivitiesById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -171,7 +171,7 @@ var _ = Describe("CouncilNodes", func() {
 				"id": "10",
 			})
 
-			mockHandler.ListCouncilNodeActivitiesById(respSpy, reqWithInvalidFilter)
+			mockHandler.ListActivitiesById(respSpy, reqWithInvalidFilter)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -185,7 +185,7 @@ var _ = Describe("CouncilNodes", func() {
 				"id": "10",
 			})
 
-			mockHandler.ListCouncilNodeActivitiesById(respSpy, reqWithInvalidFilter)
+			mockHandler.ListActivitiesById(respSpy, reqWithInvalidFilter)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -199,7 +199,7 @@ var _ = Describe("CouncilNodes", func() {
 				"id": "10",
 			})
 
-			mockHandler.ListCouncilNodeActivitiesById(respSpy, reqWithInvalidFilter)
+			mockHandler.ListActivitiesById(respSpy, reqWithInvalidFilter)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
@@ -216,7 +216,7 @@ var _ = Describe("CouncilNodes", func() {
 				"ListActivitiesById", mock.Anything, mock.Anything, mock.Anything,
 			).Return(([]viewrepo.StakingAccountActivity)(nil), (*viewrepo.PaginationResult)(nil), adapter.ErrNotFound)
 
-			mockHandler.ListCouncilNodeActivitiesById(respSpy, anyReq)
+			mockHandler.ListActivitiesById(respSpy, anyReq)
 
 			Expect(respSpy.Result().StatusCode).To(Equal(404))
 		})

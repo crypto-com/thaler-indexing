@@ -32,7 +32,7 @@ func NewRDbCouncilNodeViewRepo(
 	}
 }
 
-func (repo *RDbCouncilNodeViewRepo) ListActivities(pagination *viewrepo.Pagination) ([]viewrepo.CouncilNodeListItem, *viewrepo.PaginationResult, error) {
+func (repo *RDbCouncilNodeViewRepo) ListActive(pagination *viewrepo.Pagination) ([]viewrepo.CouncilNodeListItem, *viewrepo.PaginationResult, error) {
 	var err error
 
 	baseStmtBuilder := repo.stmtBuilder.Select().From(
@@ -154,6 +154,7 @@ func (repo *RDbCouncilNodeViewRepo) ListActivities(pagination *viewrepo.Paginati
 		); err != nil {
 			return nil, nil, fmt.Errorf("error scanning council node row: %v: %w", err, adapter.ErrRepoQuery)
 		}
+		councilNode.Status = "boneded"
 
 		if stakingAccount.MaybeAddress != nil {
 			if stakingAccount.MaybeBonded, err = bondedReader.ParseW(); err != nil {
@@ -255,6 +256,8 @@ func (repo *RDbCouncilNodeViewRepo) FindById(id uint64) (*viewrepo.CouncilNode, 
 		}
 		return nil, fmt.Errorf("error scanning council node row: %v: %w", err, adapter.ErrRepoQuery)
 	}
+
+	councilNode.Status = parseCouncilNodeStatus(&councilNode)
 
 	if stakingAccount.MaybeAddress != nil {
 		if stakingAccount.MaybeBonded, err = bondedReader.ParseW(); err != nil {
@@ -548,6 +551,7 @@ func (repo *RDbCouncilNodeViewRepo) Search(keyword string, pagination *viewrepo.
 		); err != nil {
 			return nil, nil, fmt.Errorf("error scanning council node row: %v: %w", err, adapter.ErrRepoQuery)
 		}
+		councilNode.Status = parseCouncilNodeStatus(&councilNode)
 
 		if stakingAccount.MaybeAddress != nil {
 			if stakingAccount.MaybeBonded, err = bondedReader.ParseW(); err != nil {
@@ -575,4 +579,19 @@ func (repo *RDbCouncilNodeViewRepo) Search(keyword string, pagination *viewrepo.
 	}
 
 	return councilNodes, paginationResult, nil
+}
+
+func parseCouncilNodeStatus(councilNode *viewrepo.CouncilNode) string {
+	var status string
+	if councilNode.IsActive {
+		status = "bonded"
+	} else {
+		if councilNode.StakingAccount != nil && councilNode.StakingAccount.MaybeJailedUntil != nil {
+			status = "jailed"
+		} else {
+			status = "inactive"
+		}
+	}
+
+	return status
 }

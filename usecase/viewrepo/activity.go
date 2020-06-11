@@ -62,7 +62,6 @@ type Event struct {
 	MaybeStakingAccountNonce *uint64              `json:"staking_account_nonce"`
 	MaybeBonded              *bignum.WBigInt      `json:"bonded"`
 	MaybeUnbonded            *bignum.WBigInt      `json:"unbonded"`
-	MaybeRewardMinted        *bignum.WBigInt      `json:"reward_minted"`
 	MaybeJailedUntil         *time.Time           `json:"jailed_until"`
 	MaybePunishmentKind      *string              `json:"punishment_kind"`
 	MaybeAffectedCouncilNode *ActivityCouncilNode `json:"affected_council_node"`

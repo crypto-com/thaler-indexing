@@ -11,11 +11,11 @@ type StakingAccountViewRepo interface {
 }
 
 type StakingAccount struct {
-	Address                 string                     `json:"staking_account_address"`
-	Nonce                   uint64                     `json:"staking_account_nonce"`
+	Address                 string                     `json:"address"`
+	Nonce                   uint64                     `json:"nonce"`
 	Bonded                  *bignum.WBigInt            `json:"bonded"`
 	MaybeUnbonded           *bignum.WBigInt            `json:"unbonded"`
-	MaybeUnbondedFrom       *time.Time                 `json:"unbonded_until"`
+	MaybeUnbondedFrom       *time.Time                 `json:"unbonded_from"`
 	MaybeJailedUntil        *time.Time                 `json:"jailed_until"`
 	MaybePunishmentKind     *string                    `json:"punishment_kind"`
 	MaybeCurrentCouncilNode *StakingAccountCouncilNode `json:"current_council_node"`
@@ -48,8 +48,6 @@ type StakingAccountActivity struct {
 	MaybeUnbonded              *bignum.WBigInt      `json:"unbonded"`
 	MaybeUnbondedFrom          *time.Time           `json:"unbonded_from"`
 	MaybeJoinedCouncilNode     *ActivityCouncilNode `json:"joined_council_node"`
-	MaybeRewardMinted          *bignum.WBigInt      `json:"reward_minted"`
-	MaybeRewardDistribution    []BlockRewardRecord  `json:"reward_distribution"`
 	MaybeJailedUntil           *time.Time           `json:"jailed_until"`
 	MaybePunishmentKind        *string              `json:"punishment_kind"`
 	MaybeAffectedCouncilNode   *ActivityCouncilNode `json:"affected_council_node"`
