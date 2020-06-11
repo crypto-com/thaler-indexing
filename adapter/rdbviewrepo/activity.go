@@ -321,6 +321,10 @@ func (repo *RDbActivityViewRepo) ListEvents(filter viewrepo.EventFilter, paginat
 		}
 	}
 
+	if filter.MaybeStakingAccountAddress != nil {
+		stmtBuilder = stmtBuilder.Where("a.staking_account_address = ?", *filter.MaybeStakingAccountAddress)
+	}
+
 	rDbPagination := adapter.NewRDbPaginationBuilder(
 		pagination,
 		repo.conn,

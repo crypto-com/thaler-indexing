@@ -57,7 +57,7 @@ func (handler *ActivitiesHandler) ListTransactions(resp http.ResponseWriter, req
 		}
 	}
 
-	filterStakingAccountAddress := req.URL.Query().Get("filter[staking_account_address]")
+	filterStakingAccountAddress := req.URL.Query().Get("staking_account_address")
 	if filterStakingAccountAddress != "" {
 		filter.MaybeStakingAccountAddress = &filterStakingAccountAddress
 	}
@@ -119,6 +119,11 @@ func (handler *ActivitiesHandler) ListEvents(resp http.ResponseWriter, req *http
 
 			filter.MaybeTypes = append(filter.MaybeTypes, adapter.StringToEventType(input))
 		}
+	}
+
+	filterStakingAccountAddress := req.URL.Query().Get("staking_account_address")
+	if filterStakingAccountAddress != "" {
+		filter.MaybeStakingAccountAddress = &filterStakingAccountAddress
 	}
 
 	blockTransactions, paginationResult, err := handler.activityView.ListEvents(filter, pagination)

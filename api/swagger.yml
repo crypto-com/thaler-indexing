@@ -426,7 +426,7 @@ components:
         - deposit
         - unbond
         - withdraw
-        - node_join
+        - nodejoin
         - unjail
     FilterChainTransactionTypes:
       name: transaction_types
@@ -461,7 +461,7 @@ components:
         - deposit
         - unbond
         - withdraw
-        - node_join
+        - nodejoin
         - unjail
         - reward
         - jail
@@ -825,7 +825,7 @@ components:
         - deposit
         - unbond
         - withdraw
-        - node_join
+        - nodejoin
         - unjail
     ChainEventType:
       type: string
@@ -840,7 +840,7 @@ components:
         - deposit
         - unbond
         - withdraw
-        - node_join
+        - nodejoin
         - unjail
         - reward
         - jail

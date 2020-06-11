@@ -25,9 +25,10 @@ func (repo *MockCouncilNodeViewRepo) FindById(id uint64) (*viewrepo.CouncilNode,
 
 func (repo *MockCouncilNodeViewRepo) ListActivitiesById(
 	id uint64,
+	filter viewrepo.ActivityFilter,
 	pagination *viewrepo.Pagination,
 ) ([]viewrepo.StakingAccountActivity, *viewrepo.PaginationResult, error) {
-	args := repo.Called(id, pagination)
+	args := repo.Called(id, filter, pagination)
 
 	return args.Get(0).([]viewrepo.StakingAccountActivity), args.Get(1).(*viewrepo.PaginationResult), args.Error(2)
 }

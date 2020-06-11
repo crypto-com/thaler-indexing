@@ -162,6 +162,48 @@ var _ = Describe("CouncilNodes", func() {
 			Expect(respSpy.Result().StatusCode).To(Equal(400))
 		})
 
+		It("should return BadRequest when type filter has invalid type", func() {
+			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
+				"types": "invalid",
+			})
+			respSpy := httptest.NewRecorder()
+			mockRoutePath.On("Vars", mock.Anything).Return(map[string]string{
+				"id": "10",
+			})
+
+			mockHandler.ListCouncilNodeActivitiesById(respSpy, reqWithInvalidFilter)
+
+			Expect(respSpy.Result().StatusCode).To(Equal(400))
+		})
+
+		It("should return BadRequest when type filter has mixed valid and invalid types", func() {
+			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
+				"types": "transfer,invalid",
+			})
+			respSpy := httptest.NewRecorder()
+			mockRoutePath.On("Vars", mock.Anything).Return(map[string]string{
+				"id": "10",
+			})
+
+			mockHandler.ListCouncilNodeActivitiesById(respSpy, reqWithInvalidFilter)
+
+			Expect(respSpy.Result().StatusCode).To(Equal(400))
+		})
+
+		It("should return BadRequest when type filter is not using command as separator", func() {
+			reqWithInvalidFilter := NewMockHTTPGetRequest(HTTPQueryParams{
+				"types": "transfer;reward",
+			})
+			respSpy := httptest.NewRecorder()
+			mockRoutePath.On("Vars", mock.Anything).Return(map[string]string{
+				"id": "10",
+			})
+
+			mockHandler.ListCouncilNodeActivitiesById(respSpy, reqWithInvalidFilter)
+
+			Expect(respSpy.Result().StatusCode).To(Equal(400))
+		})
+
 		It("should return NotFound when council node does not exist", func() {
 			anyReq := NewMockHTTPGetRequest(HTTPQueryParams{})
 			respSpy := httptest.NewRecorder()
@@ -171,7 +213,7 @@ var _ = Describe("CouncilNodes", func() {
 			})
 
 			mockCouncilNodeViewRepo.On(
-				"ListActivitiesById", mock.Anything, mock.Anything,
+				"ListActivitiesById", mock.Anything, mock.Anything, mock.Anything,
 			).Return(([]viewrepo.StakingAccountActivity)(nil), (*viewrepo.PaginationResult)(nil), adapter.ErrNotFound)
 
 			mockHandler.ListCouncilNodeActivitiesById(respSpy, anyReq)

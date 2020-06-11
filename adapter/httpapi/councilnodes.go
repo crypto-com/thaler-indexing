@@ -2,9 +2,12 @@ package httpapi
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
+	"github.com/crypto-com/chainindex"
 	"github.com/crypto-com/chainindex/adapter"
 	"github.com/crypto-com/chainindex/usecase"
 	"github.com/crypto-com/chainindex/usecase/viewrepo"
@@ -97,7 +100,24 @@ func (handler *CouncilNodesHandler) ListCouncilNodeActivitiesById(resp http.Resp
 		return
 	}
 
-	activities, paginationResult, err := handler.councilNodeView.ListActivitiesById(councilNodeId, pagination)
+	filter := viewrepo.ActivityFilter{
+		MaybeTypes: make([]chainindex.ActivityType, 0),
+	}
+
+	filterTypes := req.URL.Query().Get("types")
+	if filterTypes != "" {
+		filterTypeInputs := strings.Split(filterTypes, ",")
+		for _, input := range filterTypeInputs {
+			if !adapter.IsValidActivityType(input) {
+				BadRequest(resp, fmt.Errorf("invalid activity type filter: %s", input))
+				return
+			}
+
+			filter.MaybeTypes = append(filter.MaybeTypes, adapter.StringToActivityType(input))
+		}
+	}
+
+	activities, paginationResult, err := handler.councilNodeView.ListActivitiesById(councilNodeId, filter, pagination)
 	if err != nil {
 		if err == adapter.ErrNotFound {
 			NotFound(resp)

@@ -3,13 +3,14 @@ package viewrepo
 import (
 	"time"
 
+	"github.com/crypto-com/chainindex"
 	"github.com/crypto-com/chainindex/internal/bignum"
 )
 
 type CouncilNodeViewRepo interface {
 	ListActivities(pagination *Pagination) ([]CouncilNodeListItem, *PaginationResult, error)
 	FindById(id uint64) (*CouncilNode, error)
-	ListActivitiesById(id uint64, pagination *Pagination) ([]StakingAccountActivity, *PaginationResult, error)
+	ListActivitiesById(id uint64, filter ActivityFilter, pagination *Pagination) ([]StakingAccountActivity, *PaginationResult, error)
 
 	Stats() (*CouncilNodeStats, error)
 
@@ -41,6 +42,10 @@ type CouncilNode struct {
 	CreatedAtBlockHeight       uint64                     `json:"created_at_block_height"`
 	MaybeLastLeftAtBlockHeight *uint64                    `json:"last_left_at_block_height"`
 	IsActive                   bool                       `json:"is_active"`
+}
+
+type ActivityFilter struct {
+	MaybeTypes []chainindex.ActivityType
 }
 
 type CouncilNodeStakingAccount struct {

@@ -52,6 +52,54 @@ func ActivityTypeToString(activityType chainindex.ActivityType) string {
 	panic("unsupported activity type")
 }
 
+func StringToActivityType(transactionType string) chainindex.ActivityType {
+	switch transactionType {
+	case "transfer":
+		return chainindex.ACTIVITY_TRANSFER
+	case "deposit":
+		return chainindex.ACTIVITY_DEPOSIT
+	case "unbond":
+		return chainindex.ACTIVITY_UNBOND
+	case "withdraw":
+		return chainindex.ACTIVITY_WITHDRAW
+	case "nodejoin":
+		return chainindex.ACTIVITY_NODEJOIN
+	case "unjail":
+		return chainindex.ACTIVITY_UNJAIL
+	case "reward":
+		return chainindex.ACTIVITY_REWARD
+	case "slash":
+		return chainindex.ACTIVITY_SLASH
+	case "jail":
+		return chainindex.ACTIVITY_JAIL
+	}
+	panic("unsupported activity type")
+}
+
+func IsValidActivityType(transactionType string) bool {
+	switch transactionType {
+	case "transfer":
+		fallthrough
+	case "deposit":
+		fallthrough
+	case "unbond":
+		fallthrough
+	case "withdraw":
+		fallthrough
+	case "nodejoin":
+		fallthrough
+	case "unjail":
+		fallthrough
+	case "reward":
+		fallthrough
+	case "slash":
+		fallthrough
+	case "jail":
+		return true
+	}
+	return false
+}
+
 func IsValidTransactionType(transactionType string) bool {
 	switch transactionType {
 	case "transfer":

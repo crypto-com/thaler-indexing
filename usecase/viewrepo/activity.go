@@ -48,7 +48,8 @@ type TransactionInput struct {
 }
 
 type EventFilter struct {
-	MaybeTypes []chainindex.EventType
+	MaybeTypes                 []chainindex.EventType
+	MaybeStakingAccountAddress *string
 }
 
 type Event struct {

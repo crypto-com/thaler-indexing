@@ -3,6 +3,7 @@ package rdbviewrepo
 import (
 	"fmt"
 	"math/big"
+	"strings"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -275,13 +276,10 @@ func (repo *RDbCouncilNodeViewRepo) FindById(id uint64) (*viewrepo.CouncilNode, 
 	return &councilNode, nil
 }
 
-func (repo *RDbCouncilNodeViewRepo) ListActivitiesById(councilNodeId uint64, pagination *viewrepo.Pagination) ([]viewrepo.StakingAccountActivity, *viewrepo.PaginationResult, error) {
+func (repo *RDbCouncilNodeViewRepo) ListActivitiesById(councilNodeId uint64, filter viewrepo.ActivityFilter, pagination *viewrepo.Pagination) ([]viewrepo.StakingAccountActivity, *viewrepo.PaginationResult, error) {
 	var err error
 
-	rDbPagination := adapter.NewRDbPaginationBuilder(
-		pagination,
-		repo.conn,
-	).BuildStmt(repo.stmtBuilder.Select(
+	stmtBuilder := repo.stmtBuilder.Select(
 		"a.type",
 		"a.block_height",
 		"b.time",
@@ -324,7 +322,24 @@ func (repo *RDbCouncilNodeViewRepo) ListActivitiesById(councilNodeId uint64, pag
 		)`, councilNodeId, councilNodeId,
 	).OrderBy(
 		"block_height DESC",
-	))
+	)
+
+	if filter.MaybeTypes != nil {
+		filterTypesSize := len(filter.MaybeTypes)
+		if filterTypesSize != 0 {
+			preparedTypesQuery := "a.type IN (" + strings.TrimRight(strings.Repeat("?,", filterTypesSize), ",") + ")"
+			typeValues := make([]interface{}, 0, filterTypesSize)
+			for _, t := range filter.MaybeTypes {
+				typeValues = append(typeValues, adapter.ActivityTypeToString(t))
+			}
+			stmtBuilder = stmtBuilder.Where(preparedTypesQuery, typeValues...)
+		}
+	}
+
+	rDbPagination := adapter.NewRDbPaginationBuilder(
+		pagination,
+		repo.conn,
+	).BuildStmt(stmtBuilder)
 
 	sql, sqlArgs, err := rDbPagination.ToStmtBuilder().ToSql()
 	if err != nil {
