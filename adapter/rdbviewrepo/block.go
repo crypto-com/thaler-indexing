@@ -77,7 +77,7 @@ func (repo *RDbBlockViewRepo) ListBlocks(filter viewrepo.BlockFilter, pagination
 	if filter.MaybeProposers != nil {
 		filterTypesSize := len(filter.MaybeProposers)
 		if filterTypesSize != 0 {
-			preparedTypesQuery := "committed_council_nodes->0->'id' IN (" + strings.TrimRight(strings.Repeat("?,", filterTypesSize), ",") + ")"
+			preparedTypesQuery := "(committed_council_nodes->0->'id')::integer IN (" + strings.TrimRight(strings.Repeat("?,", filterTypesSize), ",") + ")"
 			typeValues := make([]interface{}, 0, filterTypesSize)
 			for _, proposerId := range filter.MaybeProposers {
 				typeValues = append(typeValues, strconv.FormatUint(proposerId, 10))
@@ -92,6 +92,7 @@ func (repo *RDbBlockViewRepo) ListBlocks(filter viewrepo.BlockFilter, pagination
 	).BuildStmt(stmtBuilder)
 
 	sql, sqlArgs, err := rDbPagination.ToStmtBuilder().ToSql()
+	fmt.Println(sql)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error building blocks select SQL: %v, %w", err, adapter.ErrBuildSQLStmt)
 	}

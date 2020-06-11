@@ -59,6 +59,7 @@ paths:
       tags:
         - blockchain
       parameters:
+      - $ref: '#/components/parameters/FilterChainBlockProposers'
       - $ref: '#/components/parameters/Limit'
       - $ref: '#/components/parameters/Page'
       - $ref: '#/components/parameters/Pagination'
@@ -433,6 +434,13 @@ components:
         - withdraw
         - nodejoin
         - unjail
+    FilterChainBlockProposers:
+      name: proposer_ids
+      in: query
+      description: comma separated council node (proposer) id
+      schema:
+        type: string
+        example: '1,2'
     FilterChainTransactionTypes:
       name: types
       in: query
