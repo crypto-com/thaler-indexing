@@ -10,8 +10,6 @@ info:
 externalDocs:
   description: Find out more about Crypto.com Chain
   url: https://chain.crypto.com
-servers:
-- url: https://chain-indexing-service.mona.co
 tags:
 - name: blockchain
   description: Information about Crypto.com chain data
