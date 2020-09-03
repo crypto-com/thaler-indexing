@@ -209,8 +209,7 @@ func parseTransactions(blockHeight uint64, txsEvents [][]tenderminttypes.BlockRe
 					case ATTRIBUTE_TXID:
 						activity.MaybeTxID = &value
 					case ATTRIBUTE_FEE:
-						croFee := bignum.MustAtof(value)
-						activity.MaybeFee = chainindex.MustCROToCoin(croFee)
+						activity.MaybeFee = chainindex.MustCROStrToCoin(value)
 					}
 				}
 			case "staking_change":
