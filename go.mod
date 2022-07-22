@@ -22,7 +22,7 @@ require (
 	github.com/rs/zerolog v1.18.0
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/stretchr/testify v1.5.1
-	github.com/tendermint/tendermint v0.33.4
+	github.com/tendermint/tendermint v0.33.6
 	github.com/urfave/cli/v2 v2.2.0
 	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37 // indirect
 	golang.org/x/net v0.0.0-20200520004742-59133d7f0dd7 // indirect
